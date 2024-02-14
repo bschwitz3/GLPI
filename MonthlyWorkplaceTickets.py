@@ -1,8 +1,8 @@
 ############################################################################################################################
 ##                                                                                                                        ##
-##  Created     :   12.02.2024                                                                  By : Bastien Schwitz      ##
+##  Created     :   14.02.2024                                                                  By : Bastien Schwitz      ##
 ##                                                                                                                        ##
-##  Name        :   WorkpaceYearlyTickets.py                                                                              ##
+##  Name        :   WorkpaceMonthlyTickets.py                                                                              ##
 ##                                                                                                                        ##
 ##  Description :   export tickets in a csv file                                                                          ##
 ##                                                                                                                        ##
@@ -13,7 +13,8 @@
 ##                     | OR | Characteristics - Entity | is | Root > Workplace > CCIH                                     ##
 ##                     | OR | Characteristics - Entity | is | Root > Workplace > Taurus Workplace                         ##
 ##                     | OR | Characteristics - Entity | is | Root > Workplace > Taurus - SecOps                          ##
-##                 AND |    | Characteristics - Opening date | after | - 1 year                                           ##
+##                 AND |     | Characteristics - Opening date | after  | Specify a date | {START DATE}                    ##
+##                     | AND | Characteristics - Opening date | before | Specify a date | {END DATE}                      ##
 ##                                                                                                                        ##
 ############################################################################################################################
 
@@ -48,16 +49,16 @@ def loading_animation():
     sys.stdout.write('\r' + TerminalColors.END + '             ' + TerminalColors.END)
     sys.stdout.flush()
 
-
 def main():
-    
     # URL
     url = "http://pp1glpi4a.gva.secutix.net/glpi/apirest.php"
+
     # Tokens
     user_token = "4cNy1sx2tdJDXrYFVR24R8SqO0fc5RiOkCMms5bx"
     app_token = "Hs6zw5MxzBMT8wsy08M8QQyb7ZxmS3xVWRPI6XNz"
 
-    one_year_ago = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')
+    start_date = "2024-01-01 00:00:00"
+    end_date = "2024-01-31 23:59:59"
 
     # Rules
     params = {
@@ -68,36 +69,42 @@ def main():
         "criteria[0][field]": 12,
         "criteria[0][searchtype]": "equals",
         "criteria[0][value]": "all",
+        "criteria[1][link]": "AND",
+        "criteria[1][criteria][0][link]": "AND",
+        "criteria[1][criteria][0][field]": 80,
+        "criteria[1][criteria][0][searchtype]": "equals",
+        "criteria[1][criteria][0][value]": 182,
+        "criteria[1][criteria][1][link]": "OR",
+        "criteria[1][criteria][1][field]": 80,
+        "criteria[1][criteria][1][searchtype]": "equals",
+        "criteria[1][criteria][1][value]": 93,
+        "criteria[1][criteria][2][link]": "OR",
+        "criteria[1][criteria][2][field]": 80,
+        "criteria[1][criteria][2][searchtype]": "equals",
+        "criteria[1][criteria][2][value]": 48,
+        "criteria[1][criteria][3][link]": "OR",
+        "criteria[1][criteria][3][field]": 80,
+        "criteria[1][criteria][3][searchtype]": "equals",
+        "criteria[1][criteria][3][value]": 137,
+        "criteria[1][criteria][4][link]": "OR",
+        "criteria[1][criteria][4][field]": 80,
+        "criteria[1][criteria][4][searchtype]": "equals",
+        "criteria[1][criteria][4][value]": 210,
+        "criteria[1][criteria][5][link]": "OR",
+        "criteria[1][criteria][5][field]": 80,
+        "criteria[1][criteria][5][searchtype]": "equals",
+        "criteria[1][criteria][5][value]": 224,
+        "savedsearches_id": 617,
         "criteria[2][link]": "AND",
         "criteria[2][criteria][0][link]": "AND",
-        "criteria[2][criteria][0][field]": 80,
-        "criteria[2][criteria][0][searchtype]": "equals",
-        "criteria[2][criteria][0][value]": 182,
-        "criteria[2][criteria][1][link]": "OR",
-        "criteria[2][criteria][1][field]": 80,
-        "criteria[2][criteria][1][searchtype]": "equals",
-        "criteria[2][criteria][1][value]": 93,
-        "criteria[2][criteria][2][link]": "OR",
-        "criteria[2][criteria][2][field]": 80,
-        "criteria[2][criteria][2][searchtype]": "equals",
-        "criteria[2][criteria][2][value]": 48,
-        "criteria[2][criteria][3][link]": "OR",
-        "criteria[2][criteria][3][field]": 80,
-        "criteria[2][criteria][3][searchtype]": "equals",
-        "criteria[2][criteria][3][value]": 137,
-        "criteria[2][criteria][4][link]": "OR",
-        "criteria[2][criteria][4][field]": 80,
-        "criteria[2][criteria][4][searchtype]": "equals",
-        "criteria[2][criteria][4][value]": 210,
-        "criteria[2][criteria][5][link]": "OR",
-        "criteria[2][criteria][5][field]": 80,
-        "criteria[2][criteria][5][searchtype]": "equals",
-        "criteria[2][criteria][5][value]": 224,
-        "criteria[3][link]": "AND",
-        "criteria[3][criteria][0][link]": "AND",
-        "criteria[3][criteria][0][field]": 15,
-        "criteria[3][criteria][0][searchtype]": "morethan",
-        "criteria[3][criteria][0][value]": one_year_ago,
+        "criteria[2][criteria][0][field]": 15,
+        "criteria[2][criteria][0][searchtype]": "morethan",
+        "criteria[2][criteria][0][value]": start_date,
+        "criteria[2][criteria][1][link]": "AND",
+        "criteria[2][criteria][1][field]": 15,
+        "criteria[2][criteria][1][searchtype]": "lessthan",
+        "criteria[2][criteria][1][value]": end_date,
+        "itemtype": "Ticket",
         "start": 0,
         "sort[]": 19,
         "order[]": "DESC",
@@ -134,7 +141,7 @@ def main():
         loading_animation_thread.join()
 
         # Path .csv
-        csv_file_path = 'tickets_data.csv'
+        csv_file_path = 'monthly_tickets_data.csv'
         # configurer rafraichissement automatique dans Power BI
 
         with open(csv_file_path, 'w', newline='', encoding='utf-8') as csvfile:
