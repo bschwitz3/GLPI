@@ -20,7 +20,6 @@
 
 import requests
 import csv
-from datetime import datetime, timedelta
 import sys
 import time
 import threading
@@ -57,8 +56,8 @@ def main():
     user_token = "4cNy1sx2tdJDXrYFVR24R8SqO0fc5RiOkCMms5bx"
     app_token = "Hs6zw5MxzBMT8wsy08M8QQyb7ZxmS3xVWRPI6XNz"
 
-    start_date = "2024-01-01 00:00:00"
-    end_date = "2024-01-31 23:59:59"
+    start_date = "2023-10-01 00:00:00"
+    end_date = "2023-10-31 23:59:59"
 
     # Rules
     params = {
