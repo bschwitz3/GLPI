@@ -1,8 +1,8 @@
 ############################################################################################################################
 ##                                                                                                                        ##
-##  Created     :   12.02.2024                                                                  By : Bastien Schwitz      ##
+##  Created     :   14.02.2024                                                                  By : Bastien Schwitz      ##
 ##                                                                                                                        ##
-##  Name        :   WorkpaceYearlyTickets.py                                                                              ##
+##  Name        :   WorkpaceMonthlyTickets.py                                                                              ##
 ##                                                                                                                        ##
 ##  Description :   export tickets in a csv file                                                                          ##
 ##                                                                                                                        ##
@@ -13,7 +13,8 @@
 ##                     | OR | Characteristics - Entity | is | Root > Workplace > CCIH                                     ##
 ##                     | OR | Characteristics - Entity | is | Root > Workplace > Taurus Workplace                         ##
 ##                     | OR | Characteristics - Entity | is | Root > Workplace > Taurus - SecOps                          ##
-##                 AND |    | Characteristics - Opening date | after | - 1 year                                           ##
+##                 AND |     | Characteristics - Opening date | after  | Specify a date | {START DATE}                    ##
+##                     | AND | Characteristics - Opening date | before | Specify a date | {END DATE}                      ##
 ##                                                                                                                        ##
 ############################################################################################################################
 
@@ -61,17 +62,45 @@ def main():
     # Rules
     params = {
         "is_deleted": 0,
-        "itemtype": "Ticket",
+        "as_map": 0,
+        "browse": 0,
         "criteria[0][link]": "AND",
-        "criteria[0][field]": 8,
+        "criteria[0][field]": 12,
         "criteria[0][searchtype]": "equals",
-        "criteria[0][value]": 178, # 178 = ECS_I_Support_Workplace 
-        "criteria[1][link]": "AND",
-        "criteria[1][field]": 15,  # Opening date
-        "criteria[1][searchtype]": "morethan",
-        "criteria[1][value]": one_year_ago,
-        "sort[0]": 19,
-        "order[0]": "DESC",
+        "criteria[0][value]": "all",
+        "criteria[2][link]": "AND",
+        "criteria[2][criteria][0][link]": "AND",
+        "criteria[2][criteria][0][field]": 80,
+        "criteria[2][criteria][0][searchtype]": "equals",
+        "criteria[2][criteria][0][value]": 182,
+        "criteria[2][criteria][1][link]": "OR",
+        "criteria[2][criteria][1][field]": 80,
+        "criteria[2][criteria][1][searchtype]": "equals",
+        "criteria[2][criteria][1][value]": 93,
+        "criteria[2][criteria][2][link]": "OR",
+        "criteria[2][criteria][2][field]": 80,
+        "criteria[2][criteria][2][searchtype]": "equals",
+        "criteria[2][criteria][2][value]": 48,
+        "criteria[2][criteria][3][link]": "OR",
+        "criteria[2][criteria][3][field]": 80,
+        "criteria[2][criteria][3][searchtype]": "equals",
+        "criteria[2][criteria][3][value]": 137,
+        "criteria[2][criteria][4][link]": "OR",
+        "criteria[2][criteria][4][field]": 80,
+        "criteria[2][criteria][4][searchtype]": "equals",
+        "criteria[2][criteria][4][value]": 210,
+        "criteria[2][criteria][5][link]": "OR",
+        "criteria[2][criteria][5][field]": 80,
+        "criteria[2][criteria][5][searchtype]": "equals",
+        "criteria[2][criteria][5][value]": 224,
+        "criteria[3][link]": "AND",
+        "criteria[3][criteria][0][link]": "AND",
+        "criteria[3][criteria][0][field]": 15,
+        "criteria[3][criteria][0][searchtype]": "morethan",
+        "_select_criteria[3][criteria][0][value]": one_year_ago,
+        "start": 0,
+        "sort[]": 19,
+        "order[]": "DESC",
     }
 
     try:
