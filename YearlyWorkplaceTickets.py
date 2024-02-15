@@ -57,8 +57,6 @@ def main():
     user_token = "4cNy1sx2tdJDXrYFVR24R8SqO0fc5RiOkCMms5bx"
     app_token = "Hs6zw5MxzBMT8wsy08M8QQyb7ZxmS3xVWRPI6XNz"
 
-    one_year_ago = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')
-
     # Rules
     params = {
         "is_deleted": 0,
@@ -97,7 +95,7 @@ def main():
         "criteria[2][criteria][0][link]": "AND",
         "criteria[2][criteria][0][field]": 15,
         "criteria[2][criteria][0][searchtype]": "morethan",
-        "criteria[2][criteria][0][value]": one_year_ago,
+        "criteria[2][criteria][0][value]": "-1YEAR",
         "start": 0,
         "sort[]": 19,
         "order[]": "DESC",
