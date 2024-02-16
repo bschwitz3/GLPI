@@ -1,28 +1,29 @@
-############################################################################################################################
-##                                                                                                                        ##
-##  Created     :   14.02.2024                                                                  By : Bastien Schwitz      ##
-##                                                                                                                        ##
-##  Name        :   WorkpaceMonthlyTickets.py                                                                              ##
-##                                                                                                                        ##
-##  Description :   export tickets in a csv file                                                                          ##
-##                                                                                                                        ##
-##  Rules       :      | Characteristics - Status | is | All                                                              ##
-##                 AND |    | Characteristics - Entity | is | Root > Workplace > Loyco                                    ##
-##                     | OR | Characteristics - Entity | is | Root > Workplace > CLDN                                     ##
-##                     | OR | Characteristics - Entity | is | Root > Workplace > ISU                                      ##
-##                     | OR | Characteristics - Entity | is | Root > Workplace > CCIH                                     ##
-##                     | OR | Characteristics - Entity | is | Root > Workplace > Taurus Workplace                         ##
-##                     | OR | Characteristics - Entity | is | Root > Workplace > Taurus - SecOps                          ##
-##                 AND |     | Characteristics - Opening date | after  | Specify a date | {START DATE}                    ##
-##                     | AND | Characteristics - Opening date | before | Specify a date | {END DATE}                      ##
-##                                                                                                                        ##
-############################################################################################################################
+##############################################################################################################################
+##                                                                                                                          ##
+##  Created     :   16.02.2024                                                                  By : Bastien Schwitz        ##
+##                                                                                                                          ##
+##  Name        :   LastMonthWorkplaceTickets.py                                                                            ##
+##                                                                                                                          ##
+##  Description :   export tickets in a csv file                                                                            ##
+##                                                                                                                          ##
+##  Rules       :      | Characteristics - Status | is | All                                                                ##
+##                 AND |    | Characteristics - Entity | is | Root > Workplace > Loyco                                      ##
+##                     | OR | Characteristics - Entity | is | Root > Workplace > CLDN                                       ##
+##                     | OR | Characteristics - Entity | is | Root > Workplace > ISU                                        ##
+##                     | OR | Characteristics - Entity | is | Root > Workplace > CCIH                                       ##
+##                     | OR | Characteristics - Entity | is | Root > Workplace > Taurus Workplace                           ##
+##                     | OR | Characteristics - Entity | is | Root > Workplace > Taurus - SecOps                            ##
+##                 AND |     | Characteristics - Opening date | after  | Specify a date | first day of last month 00:00:00  ##
+##                     | AND | Characteristics - Opening date | before | Specify a date | Last day of last month            ##
+##                                                                                                                          ##
+##############################################################################################################################
 
 import requests
 import csv
-import sys
-import time
 import threading
+from tools.animation import loading_animation
+import datetime
+import calendar
 
 class TerminalColors:
     YELLOW = '\033[93m'
@@ -30,34 +31,32 @@ class TerminalColors:
     RED = '\033[91m'
     END = '\033[0m'
 
-def loading_animation():
-    start_time = time.time()
-    while not loading_animation.stop:
-        sys.stdout.write('\r' + TerminalColors.YELLOW + 'Chargement   ' + TerminalColors.END)
-        sys.stdout.flush()
-        time.sleep(0.2)
-        sys.stdout.write('\r' + TerminalColors.YELLOW + 'Chargement.  ' + TerminalColors.END)
-        sys.stdout.flush()
-        time.sleep(0.2)
-        sys.stdout.write('\r' + TerminalColors.YELLOW + 'Chargement.. ' + TerminalColors.END)
-        sys.stdout.flush()
-        time.sleep(0.2)
-        sys.stdout.write('\r' + TerminalColors.YELLOW + 'Chargement...' + TerminalColors.END)
-        sys.stdout.flush()
-        time.sleep(0.2)
-    sys.stdout.write('\r' + TerminalColors.END + '             ' + TerminalColors.END)
-    sys.stdout.flush()
-
 def main():
-    # URL
+    
+    ####### set URL ###################################################
     url = "http://pp1glpi4a.gva.secutix.net/glpi/apirest.php"
+    ###################################################################
 
-    # Tokens
+    ####### set Tokens ################################################ 
     user_token = "4cNy1sx2tdJDXrYFVR24R8SqO0fc5RiOkCMms5bx"
     app_token = "Hs6zw5MxzBMT8wsy08M8QQyb7ZxmS3xVWRPI6XNz"
+    ###################################################################
 
-    start_date = "2023-10-01 00:00:00"
-    end_date = "2023-10-31 23:59:59"
+    # Last month
+    current_date = datetime.datetime.now()
+    print(current_date)
+    
+    if current_date.month == 1:
+        first_day = datetime.datetime(current_date.year - 1, 12, 1)
+    else:
+        first_day = datetime.datetime(current_date.year, current_date.month - 1, 1)
+
+    res = calendar.monthrange(first_day.year, first_day.month)
+    day = res[1]
+    last_day = first_day.replace(day=day)
+
+    start_date = first_day.strftime("%Y-%m-%d 00:00:00")
+    end_date = last_day.strftime("%Y-%m-%d 23:59:59") 
 
     # Rules
     params = {
@@ -139,9 +138,10 @@ def main():
         loading_animation.stop = True
         loading_animation_thread.join()
 
-        # Path .csv
-        csv_file_path = 'monthly_tickets_data.csv'
+        #################### Path / Name .csv ########################
+        csv_file_path = start_date[:7] + '_tickets_data.csv'
         # configurer rafraichissement automatique dans Power BI
+        ##############################################################
 
         with open(csv_file_path, 'w', newline='', encoding='utf-8') as csvfile:
             # Ticket's fields
@@ -182,7 +182,7 @@ def main():
                     'Time to own': ticket['155']
                 })
 
-        print(TerminalColors.GREEN + f"\nLes {len(all_tickets)} données ont été mises à jour dans : {csv_file_path}" + TerminalColors.END)
+        print(TerminalColors.GREEN + f"\nLes {len(all_tickets)} données de {start_date} à {end_date} ont été mises à jour dans : {csv_file_path}" + TerminalColors.END)
 
         # Kill session 
         response = requests.get(f"{url}/killSession/", headers={"Content-Type": "application/json", "Session-Token": session_token, "App-Token": app_token})

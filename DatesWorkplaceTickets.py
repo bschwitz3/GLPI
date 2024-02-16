@@ -1,8 +1,8 @@
 ############################################################################################################################
 ##                                                                                                                        ##
-##  Created     :   12.02.2024                                                                  By : Bastien Schwitz      ##
+##  Created     :   14.02.2024                                                                  By : Bastien Schwitz      ##
 ##                                                                                                                        ##
-##  Name        :   YearlyWorkpaceTickets.py                                                                              ##
+##  Name        :   DatesWorkplaceTickets.py                                                                            ##
 ##                                                                                                                        ##
 ##  Description :   export tickets in a csv file                                                                          ##
 ##                                                                                                                        ##
@@ -13,7 +13,8 @@
 ##                     | OR | Characteristics - Entity | is | Root > Workplace > CCIH                                     ##
 ##                     | OR | Characteristics - Entity | is | Root > Workplace > Taurus Workplace                         ##
 ##                     | OR | Characteristics - Entity | is | Root > Workplace > Taurus - SecOps                          ##
-##                 AND |    | Characteristics - Opening date | after | - 1 year                                           ##
+##                 AND |     | Characteristics - Opening date | after  | Specify a date | {START DATE}                    ##
+##                     | AND | Characteristics - Opening date | before | Specify a date | {END DATE}                      ##
 ##                                                                                                                        ##
 ############################################################################################################################
 
@@ -38,6 +39,11 @@ def main():
     user_token = "4cNy1sx2tdJDXrYFVR24R8SqO0fc5RiOkCMms5bx"
     app_token = "Hs6zw5MxzBMT8wsy08M8QQyb7ZxmS3xVWRPI6XNz"
     ###################################################################
+
+    ############### INTERVAL DATES ##################
+    start_date = "2023-10-01 00:00:00"
+    end_date = "2023-10-31 23:59:59"
+    #################################################
 
     # Rules
     params = {
@@ -73,11 +79,17 @@ def main():
         "criteria[1][criteria][5][field]": 80,
         "criteria[1][criteria][5][searchtype]": "equals",
         "criteria[1][criteria][5][value]": 224,
+        "savedsearches_id": 617,
         "criteria[2][link]": "AND",
         "criteria[2][criteria][0][link]": "AND",
         "criteria[2][criteria][0][field]": 15,
         "criteria[2][criteria][0][searchtype]": "morethan",
-        "criteria[2][criteria][0][value]": "-1YEAR",
+        "criteria[2][criteria][0][value]": start_date,
+        "criteria[2][criteria][1][link]": "AND",
+        "criteria[2][criteria][1][field]": 15,
+        "criteria[2][criteria][1][searchtype]": "lessthan",
+        "criteria[2][criteria][1][value]": end_date,
+        "itemtype": "Ticket",
         "start": 0,
         "sort[]": 19,
         "order[]": "DESC",
@@ -114,7 +126,7 @@ def main():
         loading_animation_thread.join()
 
         #################### Path / Name .csv ########################
-        csv_file_path = 'yearly_tickets_data.csv'
+        csv_file_path = 'monthly_tickets_data.csv'
         # configurer rafraichissement automatique dans Power BI
         ##############################################################
 
