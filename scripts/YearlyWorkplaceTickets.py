@@ -1,6 +1,6 @@
 ############################################################################################################################
 ##                                                                                                                        ##
-##  Created     :   12.02.2024                                                                  By : Bastien Schwitz      ##
+##  Created     :   12.02.2024                                                                             By : SCHB      ##
 ##                                                                                                                        ##
 ##  Name        :   YearlyWorkpaceTickets.py                                                                              ##
 ##                                                                                                                        ##
@@ -17,27 +17,23 @@
 ##                                                                                                                        ##
 ############################################################################################################################
 
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+
+from dotenv import load_dotenv
 import requests
 import csv
 import threading
-from tools.animation import loading_animation
-
-class TerminalColors:
-    YELLOW = '\033[93m'
-    GREEN = '\033[92m'
-    RED = '\033[91m'
-    END = '\033[0m'
+from tools.animation import loading_animation, TerminalColors
 
 def main():
-    
-    ####### set URL ###################################################
-    url = "http://pp1glpi4a.gva.secutix.net/glpi/apirest.php"
-    ###################################################################
 
-    ####### set Tokens ################################################ 
-    user_token = "4cNy1sx2tdJDXrYFVR24R8SqO0fc5RiOkCMms5bx"
-    app_token = "Hs6zw5MxzBMT8wsy08M8QQyb7ZxmS3xVWRPI6XNz"
-    ###################################################################
+    load_dotenv()
+    
+    url = os.getenv('URL')
+    app_token = os.getenv('APP_TOKEN')
+    user_token = os.getenv('USER_TOKEN')
 
     # Rules
     params = {
